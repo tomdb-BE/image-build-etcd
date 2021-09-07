@@ -1,5 +1,6 @@
 ARG UBI_IMAGE
 ARG GO_IMAGE
+
 FROM ${UBI_IMAGE} as ubi
 FROM ${GO_IMAGE} as builder
 # setup required packages

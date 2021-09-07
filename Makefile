@@ -12,6 +12,10 @@ TAG ?= v3.5.0-k3s1$(BUILD_META)
 UBI_IMAGE ?= centos:7
 GOLANG_VERSION ?= v1.16.6b7-multiarch
 
+ifeq (,$(filter %$(BUILD_META),$(TAG)))
+$(error TAG needs to end with build metadata: $(BUILD_META))
+endif
+
 .PHONY: image-build
 image-build:
 	docker build \
