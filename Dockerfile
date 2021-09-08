@@ -12,6 +12,7 @@ RUN set -x \
     libselinux-dev \
     libseccomp-dev \
     make
+
 # setup the build
 ARG PKG=go.etcd.io/etcd
 ARG SRC=github.com/rancher/etcd
@@ -24,7 +25,7 @@ RUN git checkout tags/${TAG} -b ${TAG}
 RUN go mod vendor \
  && export GO_LDFLAGS="-linkmode=external -X ${PKG}/version.GitSHA=$(git rev-parse --short HEAD)" \
  && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/etcd . \
- && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/etcdctl ./etcdctlr
+ && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/etcdctl ./etcdctl
 RUN go-assert-static.sh bin/*
 RUN go-assert-boring.sh bin/*
 RUN install -s bin/* /usr/local/bin
