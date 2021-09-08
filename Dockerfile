@@ -21,7 +21,7 @@ WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
 RUN git checkout tags/${TAG} -b ${TAG}
 # build and assert statically linked executable(s)
-WORKDIR $GOPATH/src/${PKG}/serveRUN go mod vendor \
+RUN go mod vendor \
  && export GO_LDFLAGS="-linkmode=external -X ${PKG}/version.GitSHA=$(git rev-parse --short HEAD)" \
  && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/etcd . \
  && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/etcdctl ./etcdctlr
