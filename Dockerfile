@@ -17,6 +17,7 @@ RUN set -x \
 ARG PKG=go.etcd.io/etcd
 ARG SRC=github.com/rancher/etcd
 ARG TAG="v3.4.13-k3s1"
+ENV ETCD_UNSUPPORTED_ARCH=arm64
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
