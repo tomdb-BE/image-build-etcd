@@ -38,6 +38,4 @@ RUN etcd --version
 
 FROM ubi
 ENV ETCD_UNSUPPORTED_ARCH=arm64
-RUN yum update -y && \
-    rm -rf /var/cache/yum
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
