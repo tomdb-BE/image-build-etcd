@@ -22,15 +22,10 @@ WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
 RUN git checkout tags/${TAG} -b ${TAG}
 # build and assert statically linked executable(s)
-WORKDIR $GOPATH/src/${PKG}/server
 RUN go mod vendor \
  && export GO_LDFLAGS="-linkmode=external -X ${PKG}/version.GitSHA=$(git rev-parse --short HEAD)" \
- && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o ../bin/etcd .
-WORKDIR $GOPATH/src/${PKG}/etcdctl
-RUN go mod vendor \
- && export GO_LDFLAGS="-linkmode=external -X ${PKG}/version.GitSHA=$(git rev-parse --short HEAD)" \
- && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o ../bin/etcdctl .
-WORKDIR $GOPATH/src/${PKG}
+ && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/etcd . \
+ && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/etcdctl ./etcdctl
 RUN go-assert-static.sh bin/*
 RUN go-assert-boring.sh bin/*
 RUN install -s bin/* /usr/local/bin
