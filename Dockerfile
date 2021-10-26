@@ -1,6 +1,5 @@
 ARG UBI_IMAGE
 ARG GO_IMAGE
-
 FROM ${UBI_IMAGE} as ubi
 FROM ${GO_IMAGE} as builder
 # setup required packages
@@ -14,9 +13,9 @@ RUN set -x \
     make
 # setup the build
 ARG PKG=go.etcd.io/etcd
-ARG SRC=github.com/rancher/etcd
-ARG TAG="v3.4.13-k3s1"
 ENV ETCD_UNSUPPORTED_ARCH=arm64
+ARG SRC=github.com/k3s-io/etcd
+ARG TAG="v3.5.0-k3s2"
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
@@ -24,8 +23,14 @@ RUN git checkout tags/${TAG} -b ${TAG}
 # build and assert statically linked executable(s)
 RUN go mod vendor \
  && export GO_LDFLAGS="-linkmode=external -X ${PKG}/version.GitSHA=$(git rev-parse --short HEAD)" \
- && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/etcd . \
- && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/etcdctl ./etcdctl
+ && if echo ${TAG} | grep -qE '^v3\.4\.'; then \
+    go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/etcd . \
+ && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/etcdctl ./etcdctl; \
+    else \
+    cd $GOPATH/src/${PKG}/server  && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o ../bin/etcd . \
+ && cd $GOPATH/src/${PKG}/etcdctl && go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o ../bin/etcdctl .; \
+    fi
+
 RUN go-assert-static.sh bin/*
 RUN go-assert-boring.sh bin/*
 RUN install -s bin/* /usr/local/bin

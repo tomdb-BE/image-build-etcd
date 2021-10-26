@@ -7,10 +7,14 @@ endif
 BUILD_META ?= -multiarch-build$(shell date +%Y%m%d)
 ORG ?= rancher
 PKG ?= go.etcd.io/etcd
-SRC ?= github.com/rancher/etcd
-TAG ?= v3.4.13-k3s1$(BUILD_META)
 UBI_IMAGE ?= centos:7
-GOLANG_VERSION ?= v1.16.6b7-multiarch
+GOLANG_VERSION ?= v1.16.7b7-multiarch
+SRC ?= github.com/k3s-io/etcd
+TAG ?= v3.5.0-k3s2$(BUILD_META)
+
+ifneq ($(DRONE_TAG),)
+TAG := $(DRONE_TAG)
+endif
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
 $(error TAG needs to end with build metadata: $(BUILD_META))
