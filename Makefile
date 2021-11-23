@@ -4,11 +4,15 @@ ifeq ($(ARCH),)
 ARCH=$(shell go env GOARCH)
 endif
 
+ifeq ($(ARCH),"arm64")
+ETCD_UNSUPPORTED_ARCH=$(ARCH)
+endif
+
 BUILD_META ?= -multiarch-build$(shell date +%Y%m%d)
 ORG ?= rancher
 PKG ?= go.etcd.io/etcd
-UBI_IMAGE ?= centos:7
-GOLANG_VERSION ?= v1.16.7b7-multiarch
+UBI_IMAGE ?= registry.access.redhat.com/ubi8/ubi-minimal:latest
+GOLANG_VERSION ?= v1.16.10b7-multiarch
 SRC ?= github.com/k3s-io/etcd
 TAG ?= v3.5.0-k3s2$(BUILD_META)
 
@@ -26,6 +30,8 @@ image-build:
 		--build-arg PKG=$(PKG) \
 		--build-arg SRC=$(SRC) \
 		--build-arg TAG=$(TAG:$(BUILD_META)=) \
+		--build-arg ARCH=$(ARCH) \
+		--build-arg ETCD_UNSUPPORTED_ARCH=$(ETCD_UNSUPPORTED_ARCH) \
                 --build-arg GO_IMAGE=$(ORG)/hardened-build-base:$(GOLANG_VERSION) \
                 --build-arg UBI_IMAGE=$(UBI_IMAGE) \
 		--tag $(ORG)/hardened-etcd:$(TAG) \
