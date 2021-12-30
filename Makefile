@@ -12,7 +12,7 @@ BUILD_META ?= -multiarch-build$(shell date +%Y%m%d)
 ORG ?= rancher
 PKG ?= go.etcd.io/etcd
 UBI_IMAGE ?= registry.access.redhat.com/ubi8/ubi-minimal:latest
-GOLANG_VERSION ?= v1.16.10b7-multiarch
+GOLANG_VERSION ?= v1.17.5b7-multiarch
 SRC ?= github.com/tomdb-be/etcd
 TAG ?= v3.5.1-k3s1$(BUILD_META)
 
