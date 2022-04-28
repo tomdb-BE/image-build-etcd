@@ -4,7 +4,7 @@ ifeq ($(ARCH),)
 ARCH=$(shell go env GOARCH)
 endif
 
-BUILD_META=-build$(shell date +%Y%m%d)
+BUILD_META =? -build$(shell date +%Y%m%d)
 ORG ?= rancher
 PKG ?= go.etcd.io/etcd
 SRC ?= github.com/k3s-io/etcd
