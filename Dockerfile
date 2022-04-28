@@ -1,4 +1,4 @@
-ARG UBI_IMAGE=registry.access.redhat.com/ubi8/ubi-minimal:latest
+ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
 ARG GO_IMAGE=rancher/hardened-build-base:v1.16.10b7
 FROM ${UBI_IMAGE} as ubi
 FROM ${GO_IMAGE} as builder
@@ -14,7 +14,7 @@ RUN set -x \
 # setup the build
 ARG PKG=go.etcd.io/etcd
 ARG SRC=github.com/k3s-io/etcd
-ARG TAG="v3.5.1-k3s1"
+ARG TAG="v3.5.0-k3s2"
 ARG ARCH="amd64"
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
@@ -32,8 +32,6 @@ RUN go mod vendor \
     fi
 
 RUN go-assert-static.sh bin/*
-ARG ETCD_UNSUPPORTED_ARCH
-ENV ETCD_UNSUPPORTED_ARCH=$ETCD_UNSUPPORTED_ARCH
 RUN if [ "${ARCH}" != "s390x" ]; then \
 	go-assert-boring.sh bin/*; \
     fi
@@ -43,6 +41,5 @@ RUN etcd --version
 FROM ubi
 RUN microdnf update -y && \ 
     rm -rf /var/cache/yum
-ARG ETCD_UNSUPPORTED_ARCH
-ENV ETCD_UNSUPPORTED_ARCH=$ETCD_UNSUPPORTED_ARCH
+ENV ETCD_UNSUPPORTED_ARCH=
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
