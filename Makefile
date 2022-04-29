@@ -4,7 +4,7 @@ ifeq ($(ARCH),)
 ARCH=$(shell go env GOARCH)
 endif
 
-BUILD_META =? -build$(shell date +%Y%m%d)
+BUILD_META =? -multiarch-build$(shell date +%Y%m%d)
 ORG ?= rancher
 PKG ?= go.etcd.io/etcd
 SRC ?= github.com/k3s-io/etcd
@@ -12,14 +12,6 @@ TAG ?= v3.5.4-k3s1$(BUILD_META)
 
 UBI_IMAGE ?= registry.access.redhat.com/ubi8/ubi-minimal:latest
 GOLANG_VERSION ?= v1.18.1b7-multiarch
-
-ifneq ($(DRONE_TAG),)
-TAG := $(DRONE_TAG)
-endif
-
-ifeq (,$(filter %$(BUILD_META),$(TAG)))
-$(error TAG needs to end with build metadata: $(BUILD_META))
-endif
 
 .PHONY: image-build
 image-build:
