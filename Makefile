@@ -26,6 +26,7 @@ image-build:
 		--build-arg SRC=$(SRC) \
 		--build-arg TAG=$(TAG:$(BUILD_META)=) \
 		--build-arg ARCH=$(ARCH) \
+		--build-arg ORG=$(ORG) \
 		--build-arg ETCD_UNSUPPORTED_ARCH=$(ETCD_UNSUPPORTED_ARCH) \
 		--tag $(ORG)/hardened-etcd:$(TAG) \
 		--tag $(ORG)/hardened-etcd:$(TAG)-$(ARCH) \
